@@ -1,0 +1,2951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NISBA Product Roadmap - Interactive Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --accent-gold: #f59e0b;
+            --light-blue: #eff6ff;
+            --dark-blue: #1e1b4b;
+            --warm-gray: #374151;
+            --light-gray: #9ca3af;
+            --white: #ffffff;
+            --success-green: #10b981;
+            --gradient: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            --shadow: 0 10px 30px rgba(30, 58, 138, 0.1);
+            --shadow-hover: 0 15px 40px rgba(30, 58, 138, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--warm-gray);
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Header and Navigation */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--warm-gray);
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--warm-gray);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: fixed;
+            left: 0;
+            top: 80px;
+            bottom: 0;
+            overflow-y: auto;
+            z-index: 999;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu {
+            padding: 2rem 0;
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+        }
+
+        .menu-section-title {
+            padding: 0 1.5rem 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            color: var(--warm-gray);
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: var(--light-blue);
+            color: var(--primary-blue);
+            border-left-color: var(--primary-blue);
+        }
+
+        .menu-item.active {
+            background: var(--primary-blue);
+            color: white;
+            border-left-color: var(--accent-gold);
+        }
+
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Page Content Styles */
+        .page-header {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--light-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Card Layouts */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            line-height: 1.3;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+
+        /* Stats and Metrics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-3px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--warm-gray);
+            font-weight: 600;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            min-width: 600px;
+        }
+
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table th {
+            background: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background: var(--light-blue);
+        }
+
+        .table .number {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+            padding-left: 60px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: 8px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .timeline-content {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-title {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Highlights */
+        .highlight-box {
+            background: var(--light-blue);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--primary-blue);
+            margin: 1.5rem 0;
+        }
+
+        .financial-highlight {
+            background: var(--gradient);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-text {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Feature Lists */
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: var(--light-blue);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            background: var(--primary-blue);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Phase Cards */
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .phase-card {
+            background: #f8fafc;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .phase-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .phase-header {
+            background: var(--gradient);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .phase-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .phase-timeline {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .phase-content {
+            padding: 1.5rem;
+        }
+
+        .phase-goal {
+            font-weight: bold;
+            color: var(--primary-blue);
+            margin-bottom: 1rem;
+        }
+
+        /* Roadmap Specific Styles */
+        .roadmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .roadmap-table th {
+            background: var(--primary-blue);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .roadmap-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .roadmap-table tr:hover {
+            background: var(--light-blue);
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .priority-p0 {
+            background: #dc2626;
+            color: white;
+        }
+
+        .priority-p1 {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .priority-p2 {
+            background: #10b981;
+            color: white;
+        }
+
+        /* Mobile Responsiveness - Enhanced */
+        @media (max-width: 1024px) {
+            .nav {
+                gap: 1.5rem;
+            }
+
+            .logo {
+                margin-right: 1.5rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+            }
+
+            .sidebar {
+                width: 250px;
+            }
+
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                gap: 1rem;
+            }
+
+            .logo {
+                font-size: 1.8rem;
+                margin-right: 1rem;
+            }
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                transform: translateY(-100%);
+                opacity: 0;
+                transition: all 0.3s ease;
+                z-index: 1001;
+                max-height: 70vh;
+                overflow-y: auto;
+            }
+
+            .nav-menu.mobile-open {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            .nav-item {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+
+            .nav-link {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                padding: 1rem;
+                border-radius: 8px;
+                border: 1px solid #e5e7eb;
+                background: #f9fafb;
+                text-align: center;
+                font-size: 0.9rem;
+            }
+
+            .nav-link:hover,
+            .nav-link.active {
+                background: var(--primary-blue);
+                color: white;
+                border-color: var(--primary-blue);
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 1000;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .page-header {
+                padding: 2rem 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+
+            .page-subtitle {
+                font-size: 1rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
+                border-radius: 12px;
+            }
+
+            .section-title {
+                font-size: 1.3rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .card-grid,
+            .stats-grid,
+            .feature-list,
+            .phase-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .financial-highlight {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+
+            .highlight-number {
+                font-size: 2rem;
+            }
+
+            .highlight-text {
+                font-size: 1rem;
+            }
+
+            .timeline {
+                margin-left: 1rem;
+            }
+
+            .timeline::before {
+                left: 10px;
+            }
+
+            .timeline-marker {
+                left: -2px;
+                width: 20px;
+                height: 20px;
+                font-size: 0.7rem;
+            }
+
+            .timeline-item {
+                padding-left: 40px;
+                margin-bottom: 1.5rem;
+            }
+
+            .timeline-content {
+                padding: 1rem;
+            }
+
+            .timeline-title {
+                font-size: 1rem;
+            }
+
+            .table-container {
+                margin: 1rem 0;
+                border-radius: 8px;
+            }
+
+            .table {
+                min-width: 500px;
+                font-size: 0.8rem;
+            }
+
+            .table th,
+            .table td {
+                padding: 0.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+
+            .stat-label {
+                font-size: 0.9rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .feature-item {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 0.8rem;
+            }
+
+            .feature-icon {
+                align-self: center;
+            }
+
+            .back-to-top {
+                bottom: 1rem;
+                right: 1rem;
+                width: 45px;
+                height: 45px;
+            }
+
+            /* Mobile menu overlay */
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            .mobile-overlay.active {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* Focus Accessibility */
+        .nav-link:focus,
+        .menu-item:focus,
+        .back-to-top:focus {
+            outline: 3px solid var(--accent-gold);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <nav class="nav">
+                <div class="logo">NISBA</div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="https://nisba-investments.github.io/Business-Plan/" class="nav-link" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-file-alt"></i> Business Plan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://nisba-investments.github.io/Executive-Summary/" class="nav-link" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-chart-line"></i> Executive Summary
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="fas fa-road"></i> Product Roadmap
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="https://nisba-investments.github.io/Technical-Architecture/" class="nav-link" target="_blank" rel="noopener noreferrer">
+                            <i class="fas fa-server"></i> Technical Architecture
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="fas fa-calculator"></i> Development Cost Analysis
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-menu">
+                <div class="menu-section">
+                    <div class="menu-section-title">Roadmap Overview</div>
+                    <a href="#" class="menu-item active" onclick="showPage('overview')">
+                        <i class="fas fa-map"></i> Strategic Overview
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('phases')">
+                        <i class="fas fa-calendar-alt"></i> Development Phases
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('features')">
+                        <i class="fas fa-list"></i> Feature Roadmap
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('technical')">
+                        <i class="fas fa-code"></i> Technical Evolution
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('expansion')">
+                        <i class="fas fa-globe"></i> Market Expansion
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('metrics')">
+                        <i class="fas fa-chart-line"></i> Success Metrics
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('implementation')">
+                        <i class="fas fa-cogs"></i> Implementation Strategy
+                    </a>
+                    <a href="#" class="menu-item" onclick="showPage('conclusion')">
+                        <i class="fas fa-flag-checkered"></i> Conclusion
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Strategic Overview Page -->
+            <div id="overview" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Product Roadmap</h1>
+                    <p class="page-subtitle">Strategic Development Plan (2025-2027)</p>
+                    
+                    <div class="financial-highlight" style="margin: 2rem auto; max-width: 600px;">
+                        <div class="highlight-text" style="font-size: 1.5rem; margin-bottom: 1rem;">Foundation → Growth → Leadership → Innovation</div>
+                        <div class="highlight-text">Transforming from educational platform to world's leading Islamic finance ecosystem</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-star"></i> Key Milestones
+                    </h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">1</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q2 2025: Beta Platform Launch</div>
+                                <div class="timeline-description">Initial platform release with core functionality and 100 beta users</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">2</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q4 2025: Market Traction</div>
+                                <div class="timeline-description">1,000+ active users and 5 corporate clients</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">3</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q2 2026: International Expansion</div>
+                                <div class="timeline-description">Launch in 3 European countries</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">4</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q4 2026: Advanced Features</div>
+                                <div class="timeline-description">25,000+ users with AI-powered features</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">5</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q2 2027: Global Platform</div>
+                                <div class="timeline-description">Present in 10+ countries worldwide</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-eye"></i> Vision Statement
+                    </h2>
+                    <div class="highlight-box">
+                        <p style="font-size: 1.2rem; font-style: italic; text-align: center; margin: 0;">
+                            "To become the global standard for Islamic finance education and wealth management, empowering every Muslim to build wealth while staying true to their values."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-compass"></i> Strategic Pillars
+                    </h2>
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-graduation-cap"></i> Education First
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• Comprehensive Learning: From basics to advanced strategies</li>
+                                <li>• Practical Application: Hands-on tools and simulations</li>
+                                <li>• Expert Guidance: Scholar-validated content and coaching</li>
+                                <li>• Community Support: Peer learning and knowledge sharing</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-microchip"></i> Technology Leadership
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• AI-Powered Insights: Personalized recommendations and screening</li>
+                                <li>• Real-Time Data: Live market data and compliance monitoring</li>
+                                <li>• Mobile-First Design: Seamless cross-platform experience</li>
+                                <li>• Integration Ecosystem: Connect with existing financial tools</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-globe-americas"></i> Global Accessibility
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• Multi-Language Support: Serve diverse Muslim communities</li>
+                                <li>• Local Compliance: Adapt to regional regulations</li>
+                                <li>• Cultural Sensitivity: Respect different Islamic interpretations</li>
+                                <li>• Affordable Access: Freemium model with premium features</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-shield-alt"></i> Trust & Authenticity
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• Scholar Validation: All content reviewed by Islamic finance experts</li>
+                                <li>• Transparent Methodology: Open source screening criteria</li>
+                                <li>• Regulatory Compliance: Full compliance with financial regulations</li>
+                                <li>• Data Security: Bank-level security and privacy protection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Development Phases Page -->
+            <div id="phases" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Development Phases</h1>
+                    <p class="page-subtitle">Strategic roadmap from MVP to global platform</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-rocket"></i> Development Timeline
+                    </h2>
+                    <div class="phase-grid">
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">Phase 1: Foundation</div>
+                                <div class="phase-timeline">Q1-Q2 2025</div>
+                            </div>
+                            <div class="phase-content">
+                                <div class="phase-goal">Goal: Launch MVP with core functionality</div>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Core Features:</h4>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                    <li>✓ User registration and authentication</li>
+                                    <li>✓ Basic educational content library</li>
+                                    <li>✓ Investment simulator with virtual portfolio</li>
+                                    <li>✓ Halal stock screener</li>
+                                    <li>✓ Personal coaching booking system</li>
+                                    <li>✓ Corporate portal for HR teams</li>
+                                </ul>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Success Criteria:</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>• 100 beta users actively engaged</li>
+                                    <li>• 20+ hours of educational content</li>
+                                    <li>• 1,000+ stocks in screening database</li>
+                                    <li>• 5 certified coaches onboarded</li>
+                                    <li>• 3 corporate pilot programs launched</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">Phase 2: Growth</div>
+                                <div class="phase-timeline">Q3-Q4 2025</div>
+                            </div>
+                            <div class="phase-content">
+                                <div class="phase-goal">Goal: Scale user base and enhance features</div>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Enhanced Features:</h4>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                    <li>□ Mobile applications (iOS/Android)</li>
+                                    <li>□ Advanced portfolio analytics</li>
+                                    <li>□ Group coaching sessions</li>
+                                    <li>□ Interactive assessments and certifications</li>
+                                    <li>□ Community forums and social features</li>
+                                    <li>□ Automated investment suggestions</li>
+                                </ul>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Success Criteria:</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>🎯 1,000+ individual users</li>
+                                    <li>🎯 10 corporate clients</li>
+                                    <li>🎯 50+ certified coaches</li>
+                                    <li>🎯 100+ hours of content</li>
+                                    <li>🎯 £25K monthly recurring revenue</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">Phase 3: Leadership</div>
+                                <div class="phase-timeline">Q1-Q2 2026</div>
+                            </div>
+                            <div class="phase-content">
+                                <div class="phase-goal">Goal: Establish market leadership and expand internationally</div>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Advanced Features:</h4>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                    <li>□ AI-powered investment advisor</li>
+                                    <li>□ Real-time Shariah compliance monitoring</li>
+                                    <li>□ Multi-currency portfolio management</li>
+                                    <li>□ Advanced corporate analytics</li>
+                                    <li>□ White-label solutions for financial institutions</li>
+                                    <li>□ Integration with major brokerages</li>
+                                </ul>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Success Criteria:</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>🎯 10,000+ individual users</li>
+                                    <li>🎯 50 corporate clients</li>
+                                    <li>🎯 3 international markets</li>
+                                    <li>🎯 £100K monthly recurring revenue</li>
+                                    <li>🎯 Industry recognition and awards</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="phase-card">
+                            <div class="phase-header">
+                                <div class="phase-title">Phase 4: Innovation</div>
+                                <div class="phase-timeline">Q3 2026-Q2 2027</div>
+                            </div>
+                            <div class="phase-content">
+                                <div class="phase-goal">Goal: Pioneer next-generation Islamic finance technology</div>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Next-Gen Features:</h4>
+                                <ul style="list-style: none; padding: 0; margin-bottom: 1rem;">
+                                    <li>□ Blockchain-based Shariah certificates</li>
+                                    <li>□ VR/AR educational experiences</li>
+                                    <li>□ Predictive analytics for market trends</li>
+                                    <li>□ Robo-advisor for halal investing</li>
+                                    <li>□ Institutional trading platform</li>
+                                    <li>□ Islamic finance DeFi solutions</li>
+                                </ul>
+                                <h4 style="color: var(--primary-blue); margin-bottom: 0.5rem;">Success Criteria:</h4>
+                                <ul style="list-style: none; padding: 0;">
+                                    <li>🎯 50,000+ global users</li>
+                                    <li>🎯 200+ corporate clients</li>
+                                    <li>🎯 10+ international markets</li>
+                                    <li>🎯 £500K monthly recurring revenue</li>
+                                    <li>🎯 Technology patents and IP</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Roadmap Page -->
+            <div id="features" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Feature Roadmap</h1>
+                    <p class="page-subtitle">Detailed feature development timeline and priorities</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i> Q1 2025: Platform Foundation
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Core Platform Development</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>User Management System</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Educational Content CMS</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Investment Simulator</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>4 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Halal Stock Screener</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Basic Coaching Platform</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Technical Infrastructure</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Component</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cloud Infrastructure Setup</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>1 week</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Database Design & Implementation</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>API Development</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Security Implementation</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>CI/CD Pipeline</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-rocket"></i> Q2 2025: Beta Launch & Iteration
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">User Experience Enhancement</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Responsive Web Design</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>User Onboarding Flow</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>1 week</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Dashboard Personalization</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Search & Filter Capabilities</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Help System & Tutorials</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Content & Education</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Video Content Platform</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Interactive Quizzes</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Progress Tracking</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Certification System</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-mobile-alt"></i> Q3 2025: Mobile & Advanced Features
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Mobile Applications</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>React Native App Development</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>6 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile-Optimized UI/UX</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Push Notifications</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>1 week</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Offline Content Access</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Biometric Authentication</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>1 week</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Advanced Portfolio Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Portfolio Performance Analytics</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Risk Assessment Tools</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Goal Setting & Tracking</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Investment Recommendations</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Zakat Calculation & Planning</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-users"></i> Q4 2025: Community & Enterprise
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Social Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Community Forums</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Peer Learning Groups</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Expert Q&A Platform</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Social Portfolio Sharing</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>1 week</td>
+                                    <td>Low</td>
+                                </tr>
+                                <tr>
+                                    <td>Mentorship Program</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Enterprise Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Advanced Corporate Dashboard</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>4 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Bulk User Management</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Custom Branding Options</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Integration APIs</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Compliance Reporting</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-brain"></i> Q1 2026: AI & Intelligence
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">AI-Powered Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Personalized Learning Paths</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>4 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>AI Investment Advisor</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>6 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Smart Screening Algorithms</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>4 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Predictive Analytics</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>4 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Natural Language Processing</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Advanced Analytics</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Real-Time Market Data</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Performance Benchmarking</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Risk Modeling</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Scenario Analysis</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>ESG Integration</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-globe"></i> Q2 2026: International Expansion
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Localization Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Multi-Language Support</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>4 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Regional Compliance Modules</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>6 weeks</td>
+                                    <td>Critical</td>
+                                </tr>
+                                <tr>
+                                    <td>Local Payment Methods</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>3 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>Cultural Customization</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Local Scholar Networks</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>2 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Market-Specific Features</h3>
+                    <div class="table-container">
+                        <table class="roadmap-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Priority</th>
+                                    <th>Effort</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>UK Market Enhancement</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>2 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>German Market Launch</td>
+                                    <td><span class="priority-badge priority-p0">P0</span></td>
+                                    <td>4 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>French Market Launch</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>4 weeks</td>
+                                    <td>High</td>
+                                </tr>
+                                <tr>
+                                    <td>UAE Market Expansion</td>
+                                    <td><span class="priority-badge priority-p1">P1</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Medium</td>
+                                </tr>
+                                <tr>
+                                    <td>Malaysian Market Entry</td>
+                                    <td><span class="priority-badge priority-p2">P2</span></td>
+                                    <td>3 weeks</td>
+                                    <td>Low</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Evolution Page -->
+            <div id="technical" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Technical Evolution</h1>
+                    <p class="page-subtitle">Technology stack progression and architecture evolution</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-layer-group"></i> Technology Stack Evolution
+                    </h2>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-calendar-alt"></i> Current Stack (2025)
+                            </div>
+                            <div style="background: #e0e7ff; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+                                Frontend: React 18 + TypeScript<br>
+                                Backend: Node.js + Express<br>
+                                Database: PostgreSQL + MongoDB<br>
+                                Infrastructure: AWS + Kubernetes<br>
+                                Mobile: React Native
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-rocket"></i> Enhanced Stack (2026)
+                            </div>
+                            <div style="background: #e0e7ff; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+                                Frontend: React 18 + Next.js 14<br>
+                                Backend: Node.js + NestJS + GraphQL<br>
+                                Database: PostgreSQL + MongoDB + Redis<br>
+                                Infrastructure: AWS + Serverless<br>
+                                Mobile: React Native + Expo<br>
+                                AI/ML: Python + TensorFlow
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-star"></i> Future Stack (2027)
+                            </div>
+                            <div style="background: #e0e7ff; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
+                                Frontend: React 19 + Next.js 15<br>
+                                Backend: Microservices + GraphQL Federation<br>
+                                Database: Multi-region PostgreSQL + Vector DB<br>
+                                Infrastructure: Multi-cloud + Edge Computing<br>
+                                Mobile: React Native + Web Assembly<br>
+                                AI/ML: Custom ML Models + GPT Integration<br>
+                                Blockchain: Ethereum + Polygon
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-sitemap"></i> Architecture Evolution
+                    </h2>
+                    
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">1</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Phase 1: Monolithic to Microservices</div>
+                                <div class="timeline-description">
+                                    <strong>Current:</strong> Modular monolith<br>
+                                    <strong>Target:</strong> Domain-driven microservices<br>
+                                    <strong>Timeline:</strong> Q3-Q4 2025
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">2</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Phase 2: AI Integration</div>
+                                <div class="timeline-description">
+                                    <strong>ML Pipeline:</strong> Custom model training and deployment<br>
+                                    <strong>Real-time Processing:</strong> Stream processing for market data<br>
+                                    <strong>Timeline:</strong> Q1-Q2 2026
+                                </div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">3</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Phase 3: Blockchain Integration</div>
+                                <div class="timeline-description">
+                                    <strong>Smart Contracts:</strong> Shariah compliance verification<br>
+                                    <strong>Decentralized Identity:</strong> User credential management<br>
+                                    <strong>Timeline:</strong> Q3-Q4 2026
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-tachometer-alt"></i> Performance Targets
+                    </h2>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>2025 Target</th>
+                                    <th>2026 Target</th>
+                                    <th>2027 Target</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Page Load Time</td>
+                                    <td class="number">&lt;3s</td>
+                                    <td class="number">&lt;2s</td>
+                                    <td class="number">&lt;1s</td>
+                                </tr>
+                                <tr>
+                                    <td>API Response Time</td>
+                                    <td class="number">&lt;500ms</td>
+                                    <td class="number">&lt;200ms</td>
+                                    <td class="number">&lt;100ms</td>
+                                </tr>
+                                <tr>
+                                    <td>Uptime</td>
+                                    <td class="number">99.5%</td>
+                                    <td class="number">99.9%</td>
+                                    <td class="number">99.99%</td>
+                                </tr>
+                                <tr>
+                                    <td>Concurrent Users</td>
+                                    <td class="number">1,000</td>
+                                    <td class="number">10,000</td>
+                                    <td class="number">100,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Data Processing</td>
+                                    <td class="number">1M events/day</td>
+                                    <td class="number">10M events/day</td>
+                                    <td class="number">100M events/day</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Market Expansion Page -->
+            <div id="expansion" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Market Expansion</h1>
+                    <p class="page-subtitle">Strategic geographic expansion and market entry plans</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-map-marked-alt"></i> Geographic Expansion Strategy
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Tier 1 Markets (2025-2026)</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Market</th>
+                                    <th>Timeline</th>
+                                    <th>Users Target</th>
+                                    <th>Revenue Target</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>United Kingdom</strong></td>
+                                    <td>Q2 2025</td>
+                                    <td class="number">5,000</td>
+                                    <td class="number">£150K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Germany</strong></td>
+                                    <td>Q4 2025</td>
+                                    <td class="number">3,000</td>
+                                    <td class="number">£90K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>France</strong></td>
+                                    <td>Q1 2026</td>
+                                    <td class="number">2,500</td>
+                                    <td class="number">£75K</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Tier 2 Markets (2026-2027)</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Market</th>
+                                    <th>Timeline</th>
+                                    <th>Users Target</th>
+                                    <th>Revenue Target</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Netherlands</strong></td>
+                                    <td>Q2 2026</td>
+                                    <td class="number">2,000</td>
+                                    <td class="number">£60K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Belgium</strong></td>
+                                    <td>Q3 2026</td>
+                                    <td class="number">1,500</td>
+                                    <td class="number">£45K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UAE</strong></td>
+                                    <td>Q4 2026</td>
+                                    <td class="number">4,000</td>
+                                    <td class="number">£120K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Canada</strong></td>
+                                    <td>Q1 2027</td>
+                                    <td class="number">3,500</td>
+                                    <td class="number">£105K</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Tier 3 Markets (2027+)</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Market</th>
+                                    <th>Timeline</th>
+                                    <th>Users Target</th>
+                                    <th>Revenue Target</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Malaysia</strong></td>
+                                    <td>Q2 2027</td>
+                                    <td class="number">5,000</td>
+                                    <td class="number">£100K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Indonesia</strong></td>
+                                    <td>Q3 2027</td>
+                                    <td class="number">8,000</td>
+                                    <td class="number">£160K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Turkey</strong></td>
+                                    <td>Q4 2027</td>
+                                    <td class="number">3,000</td>
+                                    <td class="number">£90K</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Australia</strong></td>
+                                    <td>Q1 2028</td>
+                                    <td class="number">2,000</td>
+                                    <td class="number">£60K</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-handshake"></i> Market Entry Strategy
+                    </h2>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-university"></i> Local Partnerships
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• Educational Institutions: Universities and Islamic schools</li>
+                                <li>• Financial Institutions: Islamic banks and fintech companies</li>
+                                <li>• Community Organizations: Mosques and Islamic centers</li>
+                                <li>• Government Bodies: Financial regulators and trade organizations</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-language"></i> Localization Requirements
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• Language: Native language content and support</li>
+                                <li>• Regulation: Local financial compliance and licensing</li>
+                                <li>• Culture: Regional Islamic interpretation and practices</li>
+                                <li>• Payment: Local payment methods and currencies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-chess"></i> Competitive Positioning
+                    </h2>
+                    
+                    <div class="highlight-box">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Market Positioning Matrix</h4>
+                        <div style="background: #fff; padding: 2rem; border-radius: 8px; text-align: center;">
+                            <pre style="font-family: monospace; color: var(--warm-gray);">
+                High Complexity
+                      |
+          Wahed    NISBA     Traditional
+          Invest   (Future)  Advisors
+             |        |         |
+Simple -------|--------|---------|------- Comprehensive
+             |        |         |
+          Islamicly  NISBA    Robo-
+          Musaffa   (Current) Advisors
+                      |
+                Low Complexity
+            </pre>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Differentiation Strategy</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">1</div>
+                            <div>
+                                <h4>Education-First Approach</h4>
+                                <p>Unique focus on learning vs. just investing</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">2</div>
+                            <div>
+                                <h4>Comprehensive Platform</h4>
+                                <p>All-in-one solution vs. point solutions</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">3</div>
+                            <div>
+                                <h4>Human + AI Coaching</h4>
+                                <p>Blend of personal guidance and technology</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">4</div>
+                            <div>
+                                <h4>Corporate Solutions</h4>
+                                <p>Only player with enterprise focus</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">5</div>
+                            <div>
+                                <h4>Global Scalability</h4>
+                                <p>Multi-market, multi-language platform</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Metrics Page -->
+            <div id="metrics" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Success Metrics</h1>
+                    <p class="page-subtitle">Key performance indicators and growth targets</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-users"></i> User Metrics
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Acquisition & Growth</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Q2 2025</th>
+                                    <th>Q4 2025</th>
+                                    <th>Q2 2026</th>
+                                    <th>Q4 2026</th>
+                                    <th>Q2 2027</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Total Users</td>
+                                    <td class="number">100</td>
+                                    <td class="number">1,000</td>
+                                    <td class="number">5,000</td>
+                                    <td class="number">15,000</td>
+                                    <td class="number">35,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Monthly Active Users</td>
+                                    <td class="number">80</td>
+                                    <td class="number">700</td>
+                                    <td class="number">3,500</td>
+                                    <td class="number">10,500</td>
+                                    <td class="number">24,500</td>
+                                </tr>
+                                <tr>
+                                    <td>User Growth Rate</td>
+                                    <td class="number">-</td>
+                                    <td class="number">300%</td>
+                                    <td class="number">150%</td>
+                                    <td class="number">100%</td>
+                                    <td class="number">75%</td>
+                                </tr>
+                                <tr>
+                                    <td>Churn Rate</td>
+                                    <td class="number">15%</td>
+                                    <td class="number">10%</td>
+                                    <td class="number">8%</td>
+                                    <td class="number">6%</td>
+                                    <td class="number">5%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Engagement & Retention</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Q2 2025</th>
+                                    <th>Q4 2025</th>
+                                    <th>Q2 2026</th>
+                                    <th>Q4 2026</th>
+                                    <th>Q2 2027</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Session Duration</td>
+                                    <td class="number">12 min</td>
+                                    <td class="number">18 min</td>
+                                    <td class="number">22 min</td>
+                                    <td class="number">25 min</td>
+                                    <td class="number">28 min</td>
+                                </tr>
+                                <tr>
+                                    <td>Sessions per User</td>
+                                    <td class="number">3.2</td>
+                                    <td class="number">4.5</td>
+                                    <td class="number">5.8</td>
+                                    <td class="number">6.5</td>
+                                    <td class="number">7.2</td>
+                                </tr>
+                                <tr>
+                                    <td>Course Completion</td>
+                                    <td class="number">65%</td>
+                                    <td class="number">75%</td>
+                                    <td class="number">80%</td>
+                                    <td class="number">85%</td>
+                                    <td class="number">88%</td>
+                                </tr>
+                                <tr>
+                                    <td>Feature Adoption</td>
+                                    <td class="number">45%</td>
+                                    <td class="number">60%</td>
+                                    <td class="number">70%</td>
+                                    <td class="number">75%</td>
+                                    <td class="number">80%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-pound-sign"></i> Business Metrics
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Revenue & Conversion</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Q2 2025</th>
+                                    <th>Q4 2025</th>
+                                    <th>Q2 2026</th>
+                                    <th>Q4 2026</th>
+                                    <th>Q2 2027</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Monthly Revenue</td>
+                                    <td class="number">£5K</td>
+                                    <td class="number">£25K</td>
+                                    <td class="number">£85K</td>
+                                    <td class="number">£200K</td>
+                                    <td class="number">£400K</td>
+                                </tr>
+                                <tr>
+                                    <td>ARR</td>
+                                    <td class="number">£60K</td>
+                                    <td class="number">£300K</td>
+                                    <td class="number">£1M</td>
+                                    <td class="number">£2.4M</td>
+                                    <td class="number">£4.8M</td>
+                                </tr>
+                                <tr>
+                                    <td>Conversion Rate</td>
+                                    <td class="number">8%</td>
+                                    <td class="number">12%</td>
+                                    <td class="number">15%</td>
+                                    <td class="number">18%</td>
+                                    <td class="number">20%</td>
+                                </tr>
+                                <tr>
+                                    <td>ARPU</td>
+                                    <td class="number">£65</td>
+                                    <td class="number">£85</td>
+                                    <td class="number">£95</td>
+                                    <td class="number">£105</td>
+                                    <td class="number">£115</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Corporate Metrics</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th>Q2 2025</th>
+                                    <th>Q4 2025</th>
+                                    <th>Q2 2026</th>
+                                    <th>Q4 2026</th>
+                                    <th>Q2 2027</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Corporate Clients</td>
+                                    <td class="number">3</td>
+                                    <td class="number">10</td>
+                                    <td class="number">25</td>
+                                    <td class="number">60</td>
+                                    <td class="number">120</td>
+                                </tr>
+                                <tr>
+                                    <td>Employees Enrolled</td>
+                                    <td class="number">150</td>
+                                    <td class="number">800</td>
+                                    <td class="number">2,500</td>
+                                    <td class="number">7,500</td>
+                                    <td class="number">18,000</td>
+                                </tr>
+                                <tr>
+                                    <td>Corporate ARR</td>
+                                    <td class="number">£18K</td>
+                                    <td class="number">£120K</td>
+                                    <td class="number">£375K</td>
+                                    <td class="number">£900K</td>
+                                    <td class="number">£1.8M</td>
+                                </tr>
+                                <tr>
+                                    <td>Enterprise NPS</td>
+                                    <td class="number">7.5</td>
+                                    <td class="number">8.2</td>
+                                    <td class="number">8.5</td>
+                                    <td class="number">8.8</td>
+                                    <td class="number">9.0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-laptop-code"></i> Product Metrics
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Platform Performance</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">99.95%</div>
+                            <div class="stat-label">Target Platform Uptime by 2027</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">1.0s</div>
+                            <div class="stat-label">Target Page Load Time by 2027</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">4.8/5</div>
+                            <div class="stat-label">Target Mobile App Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">100ms</div>
+                            <div class="stat-label">Target API Response Time</div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Content & Education</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">750</div>
+                            <div class="stat-label">Educational Hours by 2027</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">120</div>
+                            <div class="stat-label">Courses Available</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">150</div>
+                            <div class="stat-label">Certified Coaches</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Languages Supported</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-robot"></i> Technology Metrics
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">AI & Intelligence</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">15,000</div>
+                            <div class="stat-label">Stocks Screened by 2027</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">97%</div>
+                            <div class="stat-label">AI Screening Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">32%</div>
+                            <div class="stat-label">Recommendation CTR</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">25M</div>
+                            <div class="stat-label">Daily Data Processing</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Implementation Strategy Page -->
+            <div id="implementation" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Implementation Strategy</h1>
+                    <p class="page-subtitle">Development methodology and execution framework</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-cogs"></i> Development Methodology
+                    </h2>
+                    
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-sync-alt"></i> Agile Framework
+                            </div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li><strong>Sprint Duration:</strong> 2 weeks</li>
+                                <li><strong>Planning Horizon:</strong> 6 weeks (3 sprints)</li>
+                                <li><strong>Release Cycle:</strong> Monthly major releases, weekly patches</li>
+                                <li><strong>Review Cycle:</strong> Quarterly roadmap reviews</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">
+                                <i class="fas fa-users"></i> Team Structure
+                            </div>
+                            <div style="background: #e0e7ff; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem;">
+Product Owner<br>
+├── Engineering Team<br>
+│   ├── Frontend Squad (3-4 developers)<br>
+│   ├── Backend Squad (3-4 developers)<br>
+│   ├── Mobile Squad (2-3 developers)<br>
+│   └── DevOps Engineer (1)<br>
+├── Design Team<br>
+│   ├── UX Designer (1)<br>
+│   └── UI Designer (1)<br>
+├── Content Team<br>
+│   ├── Educational Content (2-3)<br>
+│   ├── Technical Writers (1-2)<br>
+│   └── Video Production (1-2)<br>
+└── Quality Assurance<br>
+    ├── QA Engineers (2)<br>
+    └── Test Automation (1)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-exclamation-triangle"></i> Risk Management
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Technical Risks</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Risk</th>
+                                    <th>Probability</th>
+                                    <th>Impact</th>
+                                    <th>Mitigation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Scaling Challenges</td>
+                                    <td>Medium</td>
+                                    <td>High</td>
+                                    <td>Load testing, gradual rollout</td>
+                                </tr>
+                                <tr>
+                                    <td>Third-party Dependencies</td>
+                                    <td>High</td>
+                                    <td>Medium</td>
+                                    <td>Vendor diversification, fallbacks</td>
+                                </tr>
+                                <tr>
+                                    <td>Security Vulnerabilities</td>
+                                    <td>Low</td>
+                                    <td>Critical</td>
+                                    <td>Regular audits, security-first design</td>
+                                </tr>
+                                <tr>
+                                    <td>Data Quality Issues</td>
+                                    <td>Medium</td>
+                                    <td>High</td>
+                                    <td>Automated validation, manual review</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Market Risks</h3>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Risk</th>
+                                    <th>Probability</th>
+                                    <th>Impact</th>
+                                    <th>Mitigation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Regulatory Changes</td>
+                                    <td>Medium</td>
+                                    <td>High</td>
+                                    <td>Legal monitoring, compliance buffer</td>
+                                </tr>
+                                <tr>
+                                    <td>Competitive Response</td>
+                                    <td>High</td>
+                                    <td>Medium</td>
+                                    <td>Feature differentiation, patent protection</td>
+                                </tr>
+                                <tr>
+                                    <td>Economic Downturn</td>
+                                    <td>Low</td>
+                                    <td>High</td>
+                                    <td>Diverse revenue streams, cost flexibility</td>
+                                </tr>
+                                <tr>
+                                    <td>Scholar Disagreements</td>
+                                    <td>Medium</td>
+                                    <td>Medium</td>
+                                    <td>Multiple scholar validation, transparency</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-key"></i> Success Factors
+                    </h2>
+                    
+                    <h3 style="color: var(--primary-blue); margin: 1.5rem 0 1rem 0;">Critical Success Factors</h3>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">1</div>
+                            <div>
+                                <h4>User Adoption</h4>
+                                <p>Achieving target user growth milestones</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">2</div>
+                            <div>
+                                <h4>Product Quality</h4>
+                                <p>Maintaining high performance and reliability</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">3</div>
+                            <div>
+                                <h4>Content Excellence</h4>
+                                <p>Scholar-validated, high-quality educational materials</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">4</div>
+                            <div>
+                                <h4>Technology Leadership</h4>
+                                <p>Staying ahead with innovative features</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">5</div>
+                            <div>
+                                <h4>Market Expansion</h4>
+                                <p>Successful international market entry</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">6</div>
+                            <div>
+                                <h4>Team Execution</h4>
+                                <p>Building and retaining top talent</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">7</div>
+                            <div>
+                                <h4>Financial Performance</h4>
+                                <p>Meeting revenue and profitability targets</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">8</div>
+                            <div>
+                                <h4>Regulatory Compliance</h4>
+                                <p>Maintaining all necessary approvals</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--primary-blue); margin: 2rem 0 1rem 0;">Key Performance Indicators (KPIs)</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">150%+</div>
+                            <div class="stat-label">Annual User Growth</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">200%+</div>
+                            <div class="stat-label">Annual Revenue Growth</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">99.9%+</div>
+                            <div class="stat-label">Platform Uptime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">4.5+</div>
+                            <div class="stat-label">App Store Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">Top 3</div>
+                            <div class="stat-label">Market Position Target</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusion Page -->
+            <div id="conclusion" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Roadmap Conclusion</h1>
+                    <p class="page-subtitle">Positioning NISBA for global Islamic finance leadership</p>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-trophy"></i> Competitive Advantages
+                    </h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div>
+                                <h4>First-Mover Advantage</h4>
+                                <p>Comprehensive Islamic finance education platform with no direct competitors</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div>
+                                <h4>Technology Leadership</h4>
+                                <p>AI-powered screening and personalized coaching at scale</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-mosque"></i>
+                            </div>
+                            <div>
+                                <h4>Scholar Validation</h4>
+                                <p>Authentic Shariah compliance across all features</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div>
+                                <h4>Scalable Architecture</h4>
+                                <p>Built for global expansion from day one</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div>
+                                <h4>Diverse Revenue Streams</h4>
+                                <p>B2C, B2B, and partnership monetization</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-chart-line"></i> Success Metrics Summary
+                    </h2>
+                    <div class="card-grid">
+                        <div class="card">
+                            <div class="card-title">2025 Targets</div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• 1,000+ users</li>
+                                <li>• £300K ARR</li>
+                                <li>• UK market leadership</li>
+                                <li>• Mobile app launch</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">2026 Targets</div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• 15,000+ users</li>
+                                <li>• £2.4M ARR</li>
+                                <li>• 3 international markets</li>
+                                <li>• AI features launched</li>
+                            </ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">2027 Targets</div>
+                            <ul style="list-style: none; padding: 0;">
+                                <li>• 35,000+ users</li>
+                                <li>• £4.8M ARR</li>
+                                <li>• Global platform recognition</li>
+                                <li>• Innovation pipeline active</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i> Next Steps
+                    </h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker">1</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Immediate: Complete Phase 1 Development</div>
+                                <div class="timeline-description">Finalize MVP features and prepare for beta launch</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">2</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q3 2025: Mobile App Launch</div>
+                                <div class="timeline-description">Release iOS and Android applications with advanced features</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">3</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Q4 2025: International Preparation</div>
+                                <div class="timeline-description">Localization and compliance for European markets</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">4</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">2026: AI Features & Market Leadership</div>
+                                <div class="timeline-description">Launch advanced AI capabilities and expand internationally</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-marker">5</div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">2027: Innovation Pipeline</div>
+                                <div class="timeline-description">Blockchain integration and next-generation features</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="financial-highlight">
+                    <div class="highlight-number">Global Islamic Finance Leadership</div>
+                    <div class="highlight-text">Transforming from educational platform to comprehensive ecosystem by 2027</div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-flag-checkered"></i> Final Thoughts
+                    </h2>
+                    <div class="highlight-box">
+                        <p style="font-size: 1.1rem; line-height: 1.6;">
+                            This roadmap positions NISBA to become the definitive Islamic finance education and wealth management platform globally. Our strategic approach combines:
+                        </p>
+                        <ul style="margin: 1rem 0; padding-left: 2rem;">
+                            <li><strong>Competitive Advantages:</strong> First-mover advantage in comprehensive Islamic finance education platform</li>
+                            <li><strong>Technology Leadership:</strong> AI-powered screening and personalized coaching at scale</li>
+                            <li><strong>Scholar Validation:</strong> Authentic Shariah compliance across all features</li>
+                            <li><strong>Scalable Architecture:</strong> Built for global expansion from day one</li>
+                            <li><strong>Diverse Revenue Streams:</strong> B2C, B2B, and partnership monetization</li>
+                        </ul>
+                        <p style="font-size: 1.1rem; line-height: 1.6; margin-top: 1rem;">
+                            This roadmap serves as our north star, balancing ambitious growth targets with practical execution milestones. Regular quarterly reviews will ensure we adapt to market feedback while maintaining our vision of becoming the global standard for Islamic finance education.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mobile Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenus()"></div>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()" aria-label="Back to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Page Management
+        function showPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Show selected page
+            const selectedPage = document.getElementById(pageId);
+            if (selectedPage) {
+                selectedPage.classList.add('active');
+                
+                // Update sidebar navigation
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => item.classList.remove('active'));
+                
+                const activeMenuItem = document.querySelector(`[onclick="showPage('${pageId}')"]`);
+                if (activeMenuItem) {
+                    activeMenuItem.classList.add('active');
+                }
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+                
+                // Close mobile menus
+                closeMobileMenus();
+            }
+        }
+
+        // Mobile Menu Management
+        function toggleMobileMenu() {
+            const navMenu = document.getElementById('navMenu');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            navMenu.classList.toggle('mobile-open');
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
+        }
+
+        function closeMobileMenus() {
+            const navMenu = document.getElementById('navMenu');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+            
+            navMenu.classList.remove('mobile-open');
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        // Scroll management
+        function handleScroll() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add scroll listener
+            window.addEventListener('scroll', handleScroll);
+            
+            // Handle clicks outside mobile menu
+            document.addEventListener('click', function(event) {
+                const sidebar = document.getElementById('sidebar');
+                const navMenu = document.getElementById('navMenu');
+                const mobileToggle = document.querySelector('.mobile-menu-toggle');
+                
+                if (!sidebar.contains(event.target) && 
+                    !navMenu.contains(event.target) && 
+                    !mobileToggle.contains(event.target)) {
+                    closeMobileMenus();
+                }
+            });
+
+            // Handle keyboard navigation
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeMobileMenus();
+                }
+            });
+
+            // Enhanced hover effects
+            const cards = document.querySelectorAll('.card, .stat-card, .feature-item, .phase-card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    if (window.innerWidth > 768) {
+                        this.style.transform = 'translateY(-5px)';
+                    }
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Handle window resize
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    if (window.innerWidth > 768) {
+                        closeMobileMenus();
+                    }
+                }, 100);
+            });
+
+            // Initial scroll check
+            handleScroll();
+        });
+    </script>
+</body>
+</html>
